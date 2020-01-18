@@ -1,0 +1,30 @@
+
+
+spring:
+  freemarker:
+    request-context-attribute: req
+    suffix: .ftl
+    content-type: text/html
+    cache: false
+    template-loader-path: classpath:/templates
+    charset: utf-8
+    check-template-location: true
+    expose-request-attributes: false
+    expose-session-attributes: false
+  mail:
+   default-encoding: UTF-8
+   host: smtp.qq.com
+   protocol: smtp
+   username: 58844411@qq.com
+   password: oqepcfodollhcbef
+  smtp:
+   auth: true
+   starttls:
+    enable: true
+    required: true
+
+
+
+
+userName: Alex
+bookTitle: Spring Boot入门教程
