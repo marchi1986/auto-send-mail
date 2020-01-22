@@ -13,12 +13,14 @@ spring:
     expose-session-attributes: false
   mail:
    default-encoding: UTF-8
-   host: smtp.qq.com
+   host: skechers-cn.mail.protection.partner.outlook.cn
    protocol: smtp
-   username: 58844411@qq.com
-   password: oqepcfodollhcbef
+   username: skxitauto@skechers.cn
+   password:
+   port: 25
   smtp:
-   auth: true
+   auth: false
+
    starttls:
     enable: true
     required: true

@@ -4,6 +4,7 @@ import com.marchi.autosendmail.MailService;
 import com.marchi.autosendmail.utils.ExcelUtils;
 import com.marchi.autosendmail.utils.ExportWordUtils;
 import com.marchi.autosendmail.utils.ReadExcelUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,26 +94,52 @@ public class HelloController {
 
         List<ArrayList<String>> readExcel = new ArrayList<>();
         try {
+
             readExcel = new ReadExcelUtils().readExcel(file);
             for(int i=0;i<readExcel.size();i++){
 
                     ArrayList<String> record= readExcel.get(i);
                     Map<String,Object> params = new HashMap<>();
-                    params.put("staffNo",record.get(0));
+
+                    String staffNo=record.get(2);
+                    if(StringUtils.isEmpty(staffNo)){
+                        continue;
+                    }
+
+                    params.put("staffNo",staffNo);
                     params.put("username",record.get(1));
-                    params.put("dept",record.get(2));
-                    params.put("rank",record.get(3));
-                    params.put("position","normal");
-                    params.put("doublePay",record.get(4));
+                    params.put("dept",record.get(0));
+                    params.put("rank",record.get(4));
+                    params.put("position",record.get(3));
+                    params.put("ceoBonus",record.get(6));
                     params.put("bonus",record.get(5));
-                    params.put("total",record.get(6));
+                    params.put("total",record.get(7));
+                    String email=record.get(8);
+                    String password=record.get(9);
+                    String languare=record.get(10);
+                    String sendFrom=record.get(11);
+                    String templatePath="";
+                    if("EN".equals(languare)){
+                        if(new BigDecimal(record.get(6)).compareTo(BigDecimal.ZERO)!=0){
+                            templatePath="static/2019奖金沟通信(EN-CEO).docx";
+                        }else{
+                            templatePath="static/2019奖金沟通信(EN).docx";
+                        }
+                    }else{
+                        if(new BigDecimal(record.get(6)).compareTo(BigDecimal.ZERO)!=0){
+                            templatePath="static/2019奖金沟通信(CN-CEO).docx";
+                        }else{
+                            templatePath="static/2019奖金沟通信(CN).docx";
+                        }
+                    }
 
 
 
                     //这里是我说的一行代码
-                    ExportWordUtils.exportWord("static/2019奖金沟通信.docx","d:/downloads",record.get(0)+".docx",params,request,response);
-                    mailService.sendAttachmentsMail("test","test","d:/downloads"+File.separator+record.get(0)+".docx");
+                    ExportWordUtils.exportWord(templatePath,"d:/downloads",password,staffNo+".docx",params,request,response);
+                    mailService.sendAttachmentsMail("2019年年度奖金沟通信",emailContext(),sendFrom,email,"d:/downloads"+File.separator+staffNo+".docx");
             }
+            file.transferTo(new File("D:/downloads/"+file.getOriginalFilename()));
             map.addAttribute("name", userName);
             map.addAttribute("bookTitle", bookTitle);
 
@@ -120,8 +148,35 @@ public class HelloController {
             e.printStackTrace();
         }
 
-        return  "welcome";
+        return  "success";
 
+    }
+
+    private String emailContext(){
+
+
+
+        StringBuffer sb=new StringBuffer();
+        sb.append("<html>");
+        sb.append("<body lang=ZH-CN link=\"#0563C1\" vlink=\"#954F72\" style='text-justify-trim:punctuation'>");
+        sb.append("<div class=WordSection1>");
+        sb.append("<p class=MsoPlainText><span style='font-size:11.0pt;font-family:\"微软雅黑\",sans-serif'>亲爱的同事，<span lang=EN-US><o:p></o:p></span></span></p>");
+        sb.append("<p class=MsoPlainText><span style='font-size:11.0pt;font-family:\"微软雅黑\",sans-serif'>您好！请查阅附件，为您<span lang=EN-US>2019</span>年年度奖金沟通信！密码是您身份证号码后<span lang=EN-US>6</span>位。<span lang=EN-US style='color:#1F497D'><o:p></o:p></span></span></p>");
+        sb.append("<p class=MsoPlainText><span style='font-size:11.0pt;font-family:\"微软雅黑\",sans-serif'>感谢您对公司做出的贡献！祝您和您的家人阖家幸福，新年快乐！<span lang=EN-US><o:p></o:p></span></span></p>");
+        sb.append("<p class=MsoPlainText><span style='font-size:11.0pt;font-family:\"微软雅黑\",sans-serif'>如有任何问题，请咨询人力资源及行政部。<span lang=EN-US><o:p></o:p></span></span></p>");
+        sb.append("<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;color:#1F497D'><o:p>&nbsp;</o:p></span></p>");
+        //sb.append("<p class=MsoNormal><span lang=EN-US style='color:#1F497D'><o:p>&nbsp;</o:p></span></p>");
+        sb.append("<p class=Default style='line-height:150%'><span lang=EN-US style='font-size:12.0pt;font-family:\"Calibri\";line-height:150%'>Dear Colleague,<o:p></o:p></span></p>");
+        sb.append("<p class=Default style='line-height:150%'><span lang=EN-US style='font-size:12.0pt;font-family:\"Calibri\";line-height:150%'>Please refer to the attachment for your Y2019 bonus communication letter. Password for the file is the last six numbers of your Identity No. <o:p></o:p></span></p>");
+        sb.append("<p class=Default style='line-height:150%'><span lang=EN-US style='font-size:12.0pt;font-family:\"Calibri\";line-height:150%'>Highly appreciated your effort &amp; contribution to the company. Wish you a prosperous Y2020 and happy Spring Festival with your family.<o:p></o:p></span></p>");
+        sb.append("<p class=Default style='line-height:150%'><span lang=EN-US style='font-size:12.0pt;font-family:\"Calibri\";line-height:150%'>Should you have any questions, please contact HR.<o:p></o:p></span></p>");
+        sb.append("<p class=Default style='line-height:150%'><span lang=EN-US style='font-size:10.5pt;font-family:\"Calibri\";line-height:150%;color:#1F497D'><o:p>&nbsp;</o:p></span></p>");
+        sb.append("<p class=MsoNormal><b><span style='font-family:\"微软雅黑\",sans-serif;color:black'>人力资源及行政部</span></b><span lang=EN-US style='font-size:10.0pt;font-family:\"微软雅黑\",sans-serif;color:black'><o:p></o:p></span></p>");
+        sb.append("<p class=MsoNormal><b><span lang=EN-US style='font-family:\"Calibri Light\",sans-serif;color:black'>HR &amp; Admin. Department</span></b><span lang=EN-US style='font-size:10.0pt;font-family:\"Calibri Light\",sans-serif;color:black'><o:p></o:p></span></p>");
+        sb.append("</div>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return sb.toString();
     }
 
 

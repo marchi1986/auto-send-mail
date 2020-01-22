@@ -72,6 +72,7 @@ public class ExcelUtils {
      * @return
      */
     public static String getXValue(XSSFCell xssfCell){
+        DecimalFormat df = new DecimalFormat("#.##");
         if (xssfCell.getCellTypeEnum() == CellType.BOOLEAN) {
             return String.valueOf(xssfCell.getBooleanCellValue());
         } else if (xssfCell.getCellTypeEnum() == CellType.NUMERIC) {
@@ -80,7 +81,7 @@ public class ExcelUtils {
                 Date date = XSSFDateUtil.getJavaDate(xssfCell.getNumericCellValue());
                 cellValue = sdf.format(date);
             }else{
-                DecimalFormat df = new DecimalFormat("#.##");
+
                 cellValue = df.format(xssfCell.getNumericCellValue());
                 String strArr = cellValue.substring(cellValue.lastIndexOf(POINT)+1,cellValue.length());
                 if(strArr.equals("00")){
@@ -91,9 +92,10 @@ public class ExcelUtils {
         }else if(xssfCell.getCellTypeEnum() == CellType.FORMULA){
             String cellValue = "";
             try {
-                cellValue = String.valueOf(xssfCell.getNumericCellValue());
+
+                cellValue = df.format(xssfCell.getNumericCellValue());
             } catch (IllegalStateException e) {
-                cellValue = String.valueOf(xssfCell.getRichStringCellValue());
+                cellValue = df.format(xssfCell.getRichStringCellValue());
             }
             return cellValue;
         }

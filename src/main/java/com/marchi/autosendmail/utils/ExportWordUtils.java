@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class ExportWordUtils {
 
-    public static void enctypt(String path) {
+    public static void enctypt(String path,String password) {
         try {
 //Add password protection and encrypt the file
             final POIFSFileSystem fs = new POIFSFileSystem();
@@ -29,7 +29,7 @@ public class ExportWordUtils {
             final Encryptor enc = info.getEncryptor();
 
 //set the password
-            enc.confirmPassword("abcdef");
+            enc.confirmPassword(password);
 
 //encrypt the file
             final OPCPackage opc = OPCPackage.open(path, PackageAccess.READ_WRITE);
@@ -61,7 +61,7 @@ public class ExportWordUtils {
      * @param request HttpServletRequest
      * @param response HttpServletResponse
      */
-    public static void exportWord(String templatePath, String temDir, String fileName, Map<String, Object> params, HttpServletRequest request, HttpServletResponse response) {
+    public static void exportWord(String templatePath, String temDir,String password, String fileName, Map<String, Object> params, HttpServletRequest request, HttpServletResponse response) {
         Assert.notNull(templatePath,"模板路径不能为空");
         Assert.notNull(temDir,"临时文件路径不能为空");
         Assert.notNull(fileName,"导出文件名不能为空");
@@ -85,7 +85,7 @@ public class ExportWordUtils {
             String tmpPath = temDir + fileName;
             FileOutputStream fos = new FileOutputStream(tmpPath);
             doc.write(fos);
-            enctypt(tmpPath);
+            enctypt(tmpPath,password);
 
 
 
