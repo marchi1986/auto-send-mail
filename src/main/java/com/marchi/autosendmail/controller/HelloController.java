@@ -1,7 +1,6 @@
 package com.marchi.autosendmail.controller;
 
-import com.marchi.autosendmail.MailService;
-import com.marchi.autosendmail.utils.ExcelUtils;
+import com.marchi.autosendmail.service.MailService;
 import com.marchi.autosendmail.utils.ExportWordUtils;
 import com.marchi.autosendmail.utils.ReadExcelUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +14,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
